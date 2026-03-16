@@ -4,11 +4,6 @@ export interface IApi {
     get<T extends object>(uri: string): Promise<T>;
     post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
 }
-export type ApiListResponse<Type> = {
-    total: number;
-    items: Type[];
-};
-
 export type TPayment = 'card' | 'cash';
 
 export interface IProduct {
@@ -21,14 +16,17 @@ export interface IProduct {
 }
 
 export interface IBuyer {
-    payment: TPayment;
+    payment: TPayment | null;
     email: string;
     phone: string;
     address: string;
 }
 
 // Ответ на GET /product/
-export type TProductListResponse = ApiListResponse<IProduct>;
+export interface TProductListResponse {
+    total: number;
+    items: IProduct[];
+}
 
 export interface IOrderRequest extends IBuyer {
     items: string[];

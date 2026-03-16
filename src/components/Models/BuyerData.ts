@@ -1,48 +1,51 @@
-import { IBuyer, TPayment } from '../../types';
+import {IBuyer, TPayment} from '../../types';
 
 export class BuyerData {
-    private _payment: TPayment = 'card';
-    private _address: string = '';
-    private _phone: string = '';
-    private _email: string = '';
+    private payment: TPayment | null = null;
+    private address: string = '';
+    private phone: string = '';
+    private email: string = '';
 
     setField(field: keyof IBuyer, value: string): void {
         if (field === 'payment') {
-            this._payment = value as TPayment;
+            if (value !== 'card' && value !== 'cash') {
+                throw new Error(`Недопустимое значение способа оплаты: ${value}`);
+            }
+            this.payment = value;
         } else {
-            this[`_${field}`] = value;
+            this[`${field}`] = value;
         }
     }
 
     getData(): IBuyer {
         return {
-            payment: this._payment,
-            address: this._address,
-            phone: this._phone,
-            email: this._email,
+            payment: this.payment as TPayment,
+            address: this.address,
+            phone: this.phone,
+            email: this.email,
         };
     }
 
     clear(): void {
-        this._payment = 'card';
-        this._address = '';
-        this._phone = '';
-        this._email = '';
+        this.payment = null;
+        this.address = '';
+        this.phone = '';
+        this.email = '';
     }
 
     validate(): Partial<Record<keyof IBuyer, string>> {
         const errors: Partial<Record<keyof IBuyer, string>> = {};
 
-        if (!this._payment) {
+        if (!this.payment) {
             errors.payment = 'Не выбран вид оплаты';
         }
-        if (!this._address) {
+        if (!this.address) {
             errors.address = 'Укажите адрес доставки';
         }
-        if (!this._phone) {
+        if (!this.phone) {
             errors.phone = 'Укажите телефон';
         }
-        if (!this._email) {
+        if (!this.email) {
             errors.email = 'Укажите email';
         }
 

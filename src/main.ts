@@ -1,3 +1,4 @@
+import './scss/styles.scss';
 import { apiProducts } from './utils/data';
 import { ProductCatalog } from './components/Models/ProductsCatalog';
 import { Cart } from './components/Models/Cart';
@@ -75,10 +76,9 @@ console.log('Валидация после очистки (ожидаем все
 //запрос товаров с сервера
 import { Api } from './components/base/Api';
 import { WebLarekApi } from './components/WebLarekApi';
+import { API_URL } from './utils/constants';
 
-const BASE_URL = 'https://larek-api.nomoreparties.co/api/weblarek';
-
-const baseApi = new Api(BASE_URL);
+const baseApi = new Api(API_URL);
 const webLarekApi = new WebLarekApi(baseApi);
 
 webLarekApi.getProducts()
