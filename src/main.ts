@@ -1,10 +1,10 @@
-import './scss/styles.scss';
 import { apiProducts } from './utils/data';
 import { ProductCatalog } from './components/Models/ProductsCatalog';
 import { Cart } from './components/Models/Cart';
 import { BuyerData } from './components/Models/BuyerData';
 
-// ProductCatalog
+
+// Каталог товаров
 const catalog = new ProductCatalog();
 
 catalog.setItems(apiProducts.items);
@@ -19,8 +19,7 @@ console.log('Товар с несуществующим id:', unknownItem);
 catalog.setPreview(apiProducts.items[0]);
 console.log('Товар для предпросмотра:', catalog.getPreview());
 
-// Cart
-
+// Корзина
 const cart = new Cart();
 
 console.log('Пустая корзина:', cart.getItems());
@@ -51,8 +50,7 @@ cart.clear();
 console.log('Корзина после очистки:', cart.getItems());
 console.log('Количество товаров после очистки:', cart.getCount());
 
-// BuyerData
-
+// Данные покупателя
 const buyer = new BuyerData();
 
 console.log('Данные покупателя (начальные):', buyer.getData());
@@ -73,3 +71,21 @@ console.log('Валидация после очистки email (ожидаем 
 buyer.clear();
 console.log('Данные покупателя после очистки:', buyer.getData());
 console.log('Валидация после очистки (ожидаем все 4 ошибки):', buyer.validate());
+
+//запрос товаров с сервера
+import { Api } from './components/base/Api';
+import { WebLarekApi } from './components/WebLarekApi';
+
+const BASE_URL = 'https://larek-api.nomoreparties.co/api/weblarek';
+
+const baseApi = new Api(BASE_URL);
+const webLarekApi = new WebLarekApi(baseApi);
+
+webLarekApi.getProducts()
+    .then((data) => {
+        catalog.setItems(data.items);
+        console.log('Товары получены с сервера и сохранены в каталог:', catalog.getItems());
+    })
+    .catch((err) => {
+        console.error('Ошибка при получении товаров с сервера:', err);
+    });

@@ -26,3 +26,17 @@ export interface IBuyer {
     phone: string;
     address: string;
 }
+
+// Ответ на GET /product/
+export type TProductListResponse = ApiListResponse<IProduct>;
+
+export interface IOrderRequest extends IBuyer {
+    items: string[];
+    total: number;
+}
+
+// Ответ POST /order/
+export interface IOrderResponse {
+    id: string;
+    total: number;
+}
