@@ -9,7 +9,8 @@ export class BuyerData {
     setField(field: keyof IBuyer, value: string): void {
         if (field === 'payment') {
             if (value !== 'card' && value !== 'cash') {
-                throw new Error(`Недопустимое значение способа оплаты: ${value}`);
+                console.error(`Недопустимое значение способа оплаты: ${value}`);
+                return;
             }
             this.payment = value;
         } else {
@@ -19,7 +20,7 @@ export class BuyerData {
 
     getData(): IBuyer {
         return {
-            payment: this.payment as TPayment,
+            payment: this.payment,
             address: this.address,
             phone: this.phone,
             email: this.email,
