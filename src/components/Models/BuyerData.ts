@@ -1,7 +1,7 @@
 import {IBuyer, TPayment} from '../../types';
 
 export class BuyerData {
-    private payment: TPayment = '';
+    private payment: TPayment | null = null;
     private address: string = '';
     private phone: string = '';
     private email: string = '';
@@ -28,7 +28,7 @@ export class BuyerData {
     }
 
     clear(): void {
-        this.payment = '';
+        this.payment = null;
         this.address = '';
         this.phone = '';
         this.email = '';
