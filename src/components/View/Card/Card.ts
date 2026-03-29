@@ -1,5 +1,5 @@
 import { Component } from '../../base/Component';
-import { categoryMap } from '../../../utils/constants';
+import {categoryMap, CDN_URL} from '../../../utils/constants';
 
 export class Card extends Component<{}> {
     protected titleEl: HTMLElement;
@@ -36,6 +36,6 @@ export class Card extends Component<{}> {
     }
 
     set image(value: string) {
-        this.setImage(this.imageEl, value);
+        this.setImage(this.imageEl, CDN_URL + value);
     }
 }
