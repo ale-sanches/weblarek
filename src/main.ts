@@ -1,12 +1,13 @@
 import './scss/styles.scss';
-import { apiProducts } from './utils/data';
-import { ProductCatalog } from './components/Models/ProductsCatalog';
-import { Cart } from './components/Models/Cart';
-import { BuyerData } from './components/Models/BuyerData';
+import {apiProducts} from './utils/data';
+import {ProductCatalog} from './components/Models/ProductsCatalog';
+import {Cart} from './components/Models/Cart';
+import {BuyerData} from './components/Models/BuyerData';
 
+const events = new EventEmitter();
 
 // Каталог товаров
-const catalog = new ProductCatalog();
+const catalog = new ProductCatalog(events);
 
 catalog.setItems(apiProducts.items);
 console.log('Все товары каталога:', catalog.getItems());
@@ -21,7 +22,7 @@ catalog.setPreview(apiProducts.items[0]);
 console.log('Товар для предпросмотра:', catalog.getPreview());
 
 // Корзина
-const cart = new Cart();
+const cart = new Cart(events);
 
 console.log('Пустая корзина:', cart.getItems());
 console.log('Количество товаров в пустой корзине:', cart.getCount());
@@ -52,8 +53,7 @@ console.log('Корзина после очистки:', cart.getItems());
 console.log('Количество товаров после очистки:', cart.getCount());
 
 // Данные покупателя
-const buyer = new BuyerData();
-
+const buyer = new BuyerData(events);
 console.log('Данные покупателя (начальные):', buyer.getData());
 console.log('Валидация пустых данных (ожидаем все 4 ошибки):', buyer.validate());
 
@@ -74,9 +74,10 @@ console.log('Данные покупателя после очистки:', buye
 console.log('Валидация после очистки (ожидаем все 4 ошибки):', buyer.validate());
 
 //запрос товаров с сервера
-import { Api } from './components/base/Api';
-import { WebLarekApi } from './components/WebLarekApi';
-import { API_URL } from './utils/constants';
+import {Api} from './components/base/Api';
+import {WebLarekApi} from './components/WebLarekApi';
+import {API_URL} from './utils/constants';
+import {EventEmitter} from "./components/base/Events.ts";
 
 const baseApi = new Api(API_URL);
 const webLarekApi = new WebLarekApi(baseApi);
