@@ -5,12 +5,16 @@ import { Form } from './Form';
 export class OrderForm extends Form {
     private cardButton: HTMLButtonElement;
     private cashButton: HTMLButtonElement;
+    private addressInput: HTMLInputElement;
 
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
 
+
         this.cardButton = container.querySelector('button[name="card"]')!;
         this.cashButton = container.querySelector('button[name="cash"]')!;
+        this.addressInput = container.querySelector('input[name="address"]')!;
+
 
         this.cardButton.addEventListener('click', () => {
             events.emit('form:change', { field: 'payment', value: 'card' });
@@ -27,6 +31,7 @@ export class OrderForm extends Form {
     }
 
     set address(value: string) {
-        (this.container.querySelector('input[name="address"]')! as HTMLInputElement).value = value;
+        this.addressInput.value = value;
+
     }
 }

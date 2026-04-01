@@ -1,19 +1,24 @@
-import { IEvents } from '../../base/Events';
-import { Card } from './Card';
+import {Card} from './Card';
+import {CDN_URL} from "../../../utils/constants.ts";
 
 export class CardCatalog extends Card {
-    private id: string = '';
+    private imageEl: HTMLImageElement;
+    private categoryEl: HTMLElement;
 
-    constructor(container: HTMLElement, events: IEvents) {
+    constructor(container: HTMLElement, onClick: () => void) {
         super(container);
 
-        container.addEventListener('click', () => {
-            events.emit('card:select', { id: this.id });
-        });
+        this.imageEl = container.querySelector('.card__image')!;
+        this.categoryEl = container.querySelector('.card__category')!;
+
+        this.container.addEventListener('click', onClick);
     }
 
-    set cardId(value: string) {
-        this.id = value;
+    set image(value: string) {
+        this.imageEl.src = CDN_URL + value;
+    }
+
+    set category(value: string) {
+        this.categoryEl.textContent = value;
     }
 }
-

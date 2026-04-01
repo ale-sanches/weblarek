@@ -12,7 +12,7 @@ export class Basket extends Component<{}> {
         this.list = container.querySelector('.basket__list')!;
         this.price = container.querySelector('.basket__price')!;
         this.button = container.querySelector('.basket__button')!;
-
+        this.button.disabled = true;
         this.button.addEventListener('click', () => {
             events.emit('order:start');
         });
@@ -21,9 +21,6 @@ export class Basket extends Component<{}> {
     set items(items: HTMLElement[]) {
         if (items.length === 0) {
             this.list.replaceChildren();
-            const empty = document.createElement('p');
-            empty.textContent = 'Корзина пуста';
-            this.list.appendChild(empty);
             this.button.disabled = true;
         } else {
             this.list.replaceChildren(...items);
