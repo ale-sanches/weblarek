@@ -39,7 +39,7 @@ const successTemplate = document.querySelector('#success') as HTMLTemplateElemen
 
 // представление
 const page = new Page(document.body, events);
-const modal = new Modal(document.querySelector('#modal-container')!, events);
+const modal = new Modal(document.querySelector('#modal-container')!);
 const basket = new Basket(
     basketTemplate.content.querySelector('.basket')!.cloneNode(true) as HTMLElement,
     events
@@ -53,20 +53,28 @@ const contactsForm = new ContactsForm(
     events
 );
 
+const cardPreview = new CardPreview(
+    cardPreviewTemplate.content.querySelector('.card')!.cloneNode(true) as HTMLElement,
+    events
+);
+const success = new Success(
+    successTemplate.content.querySelector('.order-success')!.cloneNode(true) as HTMLElement,
+    events
+);
+
 // Обработчики событий от моделей
 // рендерим карточки на главной странице при обновлениях каталога
 events.on('catalog:changed', () => {
     page.catalog = catalogModel.getItems().map((item) => {
         const card = new CardCatalog(
             cardCatalogTemplate.content.querySelector('.card')!.cloneNode(true) as HTMLElement,
-            events
+            () => events.emit('card:select', {id: item.id})
         );
         return card.render({
             title: item.title,
             price: item.price,
             category: item.category,
             image: item.image,
-            cardId: item.id,
         });
     });
 });
@@ -76,12 +84,7 @@ events.on('preview:changed', () => {
     const item = catalogModel.getPreview();
     if (!item) return;
 
-    const card = new CardPreview(
-        cardPreviewTemplate.content.querySelector('.card')!.cloneNode(true) as HTMLElement,
-        events
-    );
-
-    modal.content = card.render({
+    modal.content = cardPreview.render({
         title: item.title,
         price: item.price,
         category: item.category,
@@ -89,6 +92,7 @@ events.on('preview:changed', () => {
         description: item.description,
         inCart: cartModel.hasItem(item.id),
     });
+
     modal.open();
 });
 
@@ -100,13 +104,12 @@ events.on('cart:changed', () => {
     basket.items = cartModel.getItems().map((item, index) => {
         const card = new CardBasket(
             cardBasketTemplate.content.querySelector('.card')!.cloneNode(true) as HTMLElement,
-            events
+            () => cartModel.removeItem(item)
         );
         return card.render({
             title: item.title,
             price: item.price,
             index: index + 1,
-            cardId: item.id,
         });
     });
 });
@@ -114,10 +117,23 @@ events.on('cart:changed', () => {
 // валидация и обновление формы при изменениях от покупателя
 events.on('buyer:changed', () => {
     const errors = buyerModel.validate();
-    const orderErrors = [errors.payment, errors.address].filter(Boolean).join(', ');
-    const contactsErrors = [errors.phone, errors.email].filter(Boolean).join(', ');
 
-    orderForm.payment = buyerModel.getData().payment;
+    const buyer = buyerModel.getData();
+
+    const orderErrors = [errors.payment, errors.address]
+        .filter(Boolean)
+        .join(', ');
+
+    const contactsErrors = [errors.phone, errors.email]
+        .filter(Boolean)
+        .join(', ');
+
+    orderForm.payment = buyer.payment;
+    orderForm.address = buyer.address;
+
+    contactsForm.email = buyer.email;
+    contactsForm.phone = buyer.phone;
+
     orderForm.render({
         valid: !errors.payment && !errors.address,
         errors: orderErrors,
@@ -128,7 +144,6 @@ events.on('buyer:changed', () => {
         errors: contactsErrors,
     });
 });
-
 // Обработчики от представлений
 // сохранение превью
 events.on('card:select', (data: { id: string }) => {
@@ -149,14 +164,6 @@ events.on('card:toggleCart', () => {
         cartModel.addItem(item);
     }
     modal.close();
-});
-
-// Удаление товара из корзины
-events.on('cart:remove', (data: { id: string }) => {
-    const item = cartModel.getItems().find((i) => i.id === data.id);
-    if (item) {
-        cartModel.removeItem(item);
-    }
 });
 
 // Открытие корзины
@@ -199,11 +206,8 @@ events.on('contacts:submit', () => {
         total: cartModel.getTotalPrice(),
     })
         .then((result) => {
-            const success = new Success(
-                successTemplate.content.querySelector('.order-success')!.cloneNode(true) as HTMLElement,
-                events
-            );
             modal.content = success.render({total: result.total});
+            modal.open();
             cartModel.clear();
             buyerModel.clear();
         })
@@ -212,10 +216,6 @@ events.on('contacts:submit', () => {
         });
 });
 
-// Закрытие модалок
-events.on('modal:close', () => {
-    modal.close();
-});
 
 events.on('success:close', () => {
     modal.close();
