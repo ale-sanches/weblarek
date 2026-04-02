@@ -1,5 +1,5 @@
-import {Card} from './Card';
-import {CDN_URL} from "../../../utils/constants.ts";
+import { Card } from './Card';
+import { CDN_URL, categoryMap } from "../../../utils/constants.ts";
 
 export class CardCatalog extends Card {
     private imageEl: HTMLImageElement;
@@ -20,5 +20,14 @@ export class CardCatalog extends Card {
 
     set category(value: string) {
         this.categoryEl.textContent = value;
+
+        Object.values(categoryMap).forEach(className => {
+            this.categoryEl.classList.remove(className);
+        });
+
+        const className = categoryMap[value as keyof typeof categoryMap];
+        if (className) {
+            this.categoryEl.classList.add(className);
+        }
     }
 }
